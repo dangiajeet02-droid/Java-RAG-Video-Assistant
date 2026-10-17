@@ -1,0 +1,10 @@
+videos/
+audios/
+whisper/
+jsons/
+*.joblib
+*.mp3
+*.wav
+*.mp4
+*.pkl
+.vscode/

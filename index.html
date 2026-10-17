@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java RAG Video Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --panel-bg: #1e293b;
+      --card-bg: #334155;
+      --accent-color: #6366f1;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+    
+    .sidebar { width: 300px; background-color: var(--panel-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: 1.1rem; font-weight: 700; }
+    .brand i { color: var(--accent-color); font-size: 1.5rem; }
+    
+    .chat-container { flex: 1; display: flex; flex-direction: column; }
+    .chat-header { height: 64px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background-color: var(--panel-bg); }
+    .messages-area { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+    
+    .message { display: flex; gap: 16px; max-width: 80%; }
+    .message.user { align-self: flex-end; flex-direction: row-reverse; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--card-bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .message.assistant .avatar { background: var(--accent-color); }
+    .bubble { background: var(--panel-bg); padding: 14px 18px; border-radius: 12px; font-size: 0.95rem; border: 1px solid var(--border-color); }
+    .message.user .bubble { background: var(--accent-color); border: none; }
+    
+    .sources-container { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .source-card { background: var(--card-bg); border-radius: 8px; padding: 10px; border-left: 4px solid var(--accent-color); font-size: 0.85rem; }
+    
+    .input-container { padding: 20px 24px; background: var(--panel-bg); border-top: 1px solid var(--border-color); }
+    .input-box { display: flex; gap: 12px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; }
+    .input-box input { flex: 1; background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.95rem; }
+    .send-btn { background: var(--accent-color); color: white; border: none; width: 36px; height: 36px; border-radius: 6px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="brand">
+      <i class="fa-solid fa-brain"></i>
+      <span>Java RAG Bot</span>
+    </div>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+      Status: FastAPI Connected
+      <p>Right Now Only Java Titorial</p>
+    </div>
+  </aside>
+
+  <main class="chat-container">
+    <header class="chat-header">
+      <h2>Interactive Video Assistant</h2>
+    </header>
+
+    <div class="messages-area" id="chatArea">
+      <div class="message assistant">
+        <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+        <div class="bubble">Hello! Ask anything about your Java tutorial videos.</div>
+      </div>
+    </div>
+
+    <div class="input-container">
+      <div class="input-box">
+        <input type="text" id="userInput" placeholder="Ask a question..." onkeydown="if(event.key==='Enter') sendMessage()">
+        <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    async function sendMessage() {
+      const inputField = document.getElementById("userInput");
+      const query = inputField.value.trim();
+      if (!query) return;
+
+      const chatArea = document.getElementById("chatArea");
+
+      // 1. User Message UI me dikhana
+      chatArea.innerHTML += `
+        <div class="message user">
+          <div class="avatar"><i class="fa-solid fa-user"></i></div>
+          <div class="bubble">${query}</div>
+        </div>
+      `;
+      inputField.value = "";
+      chatArea.scrollTop = chatArea.scrollHeight;
+
+      // 2. Backend FastAPI ko call karna
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: query })
+        });
+
+        const data = await res.json();
+
+        // 3. Bot Response UI me Render karna
+        chatArea.innerHTML += `
+          <div class="message assistant">
+            <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+            <div class="bubble">
+              ${data.response}
+              <div class="sources-container">
+                <div class="source-card">
+                  🎥 <strong>${data.sources[0].title}</strong> (@ ${data.sources[0].timestamp})
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        chatArea.scrollTop = chatArea.scrollHeight;
+
+      } catch (err) {
+        console.error("Backend Error:", err);
+      }
+    }
+  </script>
+
+</body>
+</html>

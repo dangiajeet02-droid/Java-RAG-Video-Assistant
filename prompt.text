@@ -1,0 +1,10 @@
+ i am teaching java in my java course devlepment. Here are video subtitle chunks contatting video title,
+video number, start time in seconds, end time in seconds, the text at that time:
+
+[{"title":"C java","number":"13th","start":477.48,"end":480.48,"text":" See program files."},{"title":"C java","number":"13th","start":677.48,"end":679.48,"text":" Go to your folder."},{"title":"C java","number":"13th","start":1072.96,"end":1080.04,"text":" you need to select it and then initial directory file directory apply then click on ok when I click"},{"title":"C java","number":"2nd","start":1543.44,"end":1549.44,"text":" Go to command prompt. I told you if you want to display."},{"title":"C java","number":"2nd","start":283.6,"end":284.88,"text":" And then run this program."}]
+----------------------
+"C:\Users\Ajeet Dangi\anaconda3\python.exe" "c:/Users/Ajeet Dangi/Desktop/RAG project/app.py"
+usre ask this question related to the chunks,you have to answer in a human way (dont mention the above format,its just for you)
+where and how much content in tougth in which 
+viddeo(in which video and at what timestamp) and guide the user to go to the particular video. if ask unrelated question 
+related to the course
